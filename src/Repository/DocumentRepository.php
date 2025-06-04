@@ -16,6 +16,23 @@ class DocumentRepository extends ServiceEntityRepository
         parent::__construct($registry, Document::class);
     }
 
+    /**
+     * Search documents by title for a specific user
+     * @return Document[] Returns an array of Document objects
+     */
+    public function findByTitleAndUser(string $searchTerm, $user): array
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.user = :user')
+            ->andWhere('d.title LIKE :title')
+            ->setParameter('user', $user)
+            ->setParameter('title', '%' . $searchTerm . '%')
+            ->orderBy('d.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     //    /**
     //     * @return Document[] Returns an array of Document objects
     //     */

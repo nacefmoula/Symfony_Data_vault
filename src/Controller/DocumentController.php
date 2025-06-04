@@ -19,12 +19,28 @@ use Symfony\Component\Uid\Uuid;
 final class DocumentController extends AbstractController
 {
     #[Route(name: 'app_document_index', methods: ['GET'])]
-    public function index(DocumentRepository $documentRepository): Response
+    public function index(Request $request, DocumentRepository $documentRepository): Response
     {
         $user = $this->getUser();
-        $documents = $documentRepository->findBy(['user' => $user]);
+        $searchTerm = $request->query->get('search', '');
+
+        if (!empty($searchTerm)) {
+            $documents = $documentRepository->findByTitleAndUser($searchTerm, $user);
+        } else {
+            $documents = $documentRepository->findBy(['user' => $user], ['createdAt' => 'DESC']);
+        }
+
+        // If this is an AJAX request, return only the document cards
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('document/_search_results.html.twig', [
+                'documents' => $documents,
+                'searchTerm' => $searchTerm,
+            ]);
+        }
+
         return $this->render('document/index.html.twig', [
             'documents' => $documents,
+            'searchTerm' => $searchTerm,
         ]);
     }
 
@@ -70,7 +86,7 @@ final class DocumentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_document_show', methods: ['GET'])]
+    #[Route('/{id<\d+>}', name: 'app_document_show', methods: ['GET'])]
     public function show(Document $document): Response
     {
         if ($document->getUser() !== $this->getUser()) {
@@ -81,7 +97,7 @@ final class DocumentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_document_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id<\d+>}/edit', name: 'app_document_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Document $document, EntityManagerInterface $entityManager): Response
     {
         if ($document->getUser() !== $this->getUser()) {
@@ -102,7 +118,7 @@ final class DocumentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_document_delete', methods: ['POST'])]
+    #[Route('/{id<\d+>}', name: 'app_document_delete', methods: ['POST'])]
     public function delete(Request $request, Document $document, EntityManagerInterface $entityManager): Response
     {
         if ($document->getUser() !== $this->getUser()) {
@@ -116,7 +132,7 @@ final class DocumentController extends AbstractController
         return $this->redirectToRoute('app_document_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/share', name: 'app_document_share', methods: ['GET', 'POST'])]
+    #[Route('/{id<\d+>}/share', name: 'app_document_share', methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function share(Request $request, Document $document, EntityManagerInterface $em): Response
     {
@@ -165,7 +181,7 @@ final class DocumentController extends AbstractController
         return $this->file($filePath, $document->getTitle());
     }
 
-    #[Route('/{id}/revoke-share', name: 'app_document_revoke_share', methods: ['POST'])]
+    #[Route('/{id<\d+>}/revoke-share', name: 'app_document_revoke_share', methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function revokeShare(Document $document, EntityManagerInterface $em): Response
     {
