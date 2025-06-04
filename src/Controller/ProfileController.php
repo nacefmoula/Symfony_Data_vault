@@ -88,7 +88,7 @@ class ProfileController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $currentPassword = $form->get('currentPassword')->getData();
-            
+
             // Verify current password
             if (!$userPasswordHasher->isPasswordValid($user, $currentPassword)) {
                 $this->addFlash('error', 'Current password is incorrect.');
@@ -123,16 +123,16 @@ class ProfileController extends AbstractController
         if ($this->isCsrfTokenValid('delete-photo', $request->getPayload()->getString('_token'))) {
             /** @var User $user */
             $user = $this->getUser();
-            
+
             if ($user->getProfilePhoto()) {
                 $photoPath = $this->getParameter('profile_photos_directory') . '/' . $user->getProfilePhoto();
                 if (file_exists($photoPath)) {
                     unlink($photoPath);
                 }
-                
+
                 $user->setProfilePhoto(null);
                 $entityManager->flush();
-                
+
                 $this->addFlash('success', 'Profile photo deleted successfully!');
             }
         }

@@ -29,11 +29,11 @@
                             </div>
                             <div class="card-body text-center">
                                 {% if user.profilePhoto %}
-                                    <img src="{{ asset('uploads/profile_photos/' ~ user.profilePhoto) }}" 
-                                         alt="Profile Photo" 
-                                         class="img-fluid rounded-circle mb-3" 
+                                    <img src="{{ asset('uploads/profile_photos/' ~ user.profilePhoto) }}"
+                                         alt="Profile Photo"
+                                         class="img-fluid rounded-circle mb-3"
                                          style="width: 150px; height: 150px; object-fit: cover;">
-                                    
+
                                     <form method="post" action="{{ path('app_profile_delete_photo') }}" class="d-inline">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete-photo') }}">
                                         <button type="submit" class="btn btn-outline-danger btn-sm"
@@ -42,7 +42,7 @@
                                         </button>
                                     </form>
                                 {% else %}
-                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
                                          style="width: 150px; height: 150px;">
                                         <i class="fas fa-user fa-4x text-muted"></i>
                                     </div>
