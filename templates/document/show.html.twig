@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ document.title }}{% endblock %}
+
+{% block body %}
+    <div class="mb-4">
+        <a href="{{ path('app_document_index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Documents
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="row g-0">
+                <div class="col-md-4 bg-light p-4 d-flex flex-column align-items-center justify-content-center">
+                    {% set extension = document.filePath|split('.')|last|default('file') %}
+                    {% set icon = {
+                        'pdf': 'fa-file-pdf text-danger',
+                        'doc': 'fa-file-word text-primary',
+                        'docx': 'fa-file-word text-primary',
+                        'xls': 'fa-file-excel text-success',
+                        'xlsx': 'fa-file-excel text-success',
+                        'ppt': 'fa-file-powerpoint text-warning',
+                        'pptx': 'fa-file-powerpoint text-warning',
+                        'jpg': 'fa-file-image text-info',
+                        'jpeg': 'fa-file-image text-info',
+                        'png': 'fa-file-image text-info',
+                        'txt': 'fa-file-alt text-secondary'
+                    }[extension]|default('fa-file text-secondary') %}
+
+                    <i class="far {{ icon }} fa-8x mb-4"></i>
+
+                    {% if document.filePath %}
+                        <a href="{{ asset('uploads/documents/' ~ document.filePath) }}"
+                           class="btn btn-primary btn-lg"
+                           target="_blank">
+                            <i class="fas fa-download me-2"></i> Download
+                        </a>
+                    {% else %}
+                        <button class="btn btn-secondary btn-lg" disabled>
+                            <i class="fas fa-times-circle me-2"></i> No file
+                        </button>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-8 p-4">
+                    <h1 class="h2 fw-bold mb-4">{{ document.title }}</h1>
+
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-light rounded-circle p-2 me-3">
+                                <i class="fas fa-calendar-alt text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Created</small>
+                                <strong>{{ document.createdAt ? document.createdAt|date('F d, Y - h:i a') : '' }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-light rounded-circle p-2 me-3">
+                                <i class="fas fa-user text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Owner</small>
+                                <strong>{{ document.user.email }}</strong>
+                            </div>
+                        </div>
+
+                        {% if document.filePath %}
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded-circle p-2 me-3">
+                                <i class="fas fa-file text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Filename</small>
+                                <strong>{{ document.filePath }}</strong>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <a href="{{ path('app_document_edit', {'id': document.id}) }}" class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </a>
+                        {{ include('document/_delete_form.html.twig') }}
+                        {% if app.user and document.user == app.user %}
+                            <a href="{{ path('app_document_share', {id: document.id}) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-share-alt"></i> Share
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    {% if app.user and document.user == app.user and document.sharedToken %}
+                        <div class="mt-3">
+                            <label class="form-label fw-bold">Sharing Link</label>
+                            <input type="text" class="form-control mb-2" readonly value="{{ url('app_document_shared', {token: document.sharedToken}) }}">
+                            <small class="text-muted">
+                                Expires: {{ document.sharedTokenExpiresAt|date('Y-m-d H:i') }},
+                                Uses: {{ document.sharedTokenUses }}/{{ document.sharedTokenMaxUses }}
+                            </small>
+                            <form method="post" action="{{ path('app_document_revoke_share', {id: document.id}) }}" class="d-inline">
+                                <button class="btn btn-sm btn-danger ms-2">Revoke Link</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

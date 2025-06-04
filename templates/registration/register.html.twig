@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Your Data Vault Account{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center my-5">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-lg-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                        <h2 class="fw-bold">Create Your Account</h2>
+                        <p class="text-muted">Join Data Vault to securely store and manage your documents</p>
+                    </div>
+
+                    {% for flash_error in app.flashes('verify_email_error') %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ flash_error }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+
+                    {% if form_errors(registrationForm) %}
+                        <div class="alert alert-danger">
+                            {{ form_errors(registrationForm) }}
+                        </div>
+                    {% endif %}
+
+                    {{ form_start(registrationForm, {'attr': {'class': 'needs-validation'}}) }}
+                        <div class="mb-4">
+                            {{ form_label(registrationForm.email, 'Email Address', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            <div class="input-group mb-1">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                {{ form_widget(registrationForm.email, {'attr': {
+                                    'class': 'form-control form-control-lg',
+                                    'placeholder': 'Enter your email address'
+                                }}) }}
+                            </div>
+                            {% if registrationForm.email.vars.errors|length > 0 %}
+                                <div class="text-danger mt-1">
+                                    {{ form_errors(registrationForm.email) }}
+                                </div>
+                            {% else %}
+                                <div class="form-text">We'll never share your email with anyone else</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form_label(registrationForm.plainPassword, 'Password', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            <div class="input-group mb-1">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                {{ form_widget(registrationForm.plainPassword, {'attr': {
+                                    'class': 'form-control form-control-lg',
+                                    'placeholder': 'Create a secure password'
+                                }}) }}
+                            </div>
+                            {% if registrationForm.plainPassword.vars.errors|length > 0 %}
+                                <div class="text-danger mt-1">
+                                    {{ form_errors(registrationForm.plainPassword) }}
+                                </div>
+                            {% else %}
+                                <div class="form-text">Use at least 8 characters with letters, numbers and symbols</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(registrationForm.agreeTerms, 'I agree to the Terms of Service and Privacy Policy', {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                            {% if registrationForm.agreeTerms.vars.errors|length > 0 %}
+                                <div class="text-danger mt-1">
+                                    {{ form_errors(registrationForm.agreeTerms) }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                    {{ form_end(registrationForm) }}
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Already have an account? <a href="{{ path('app_login') }}" class="text-primary fw-bold">Sign in</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-shield-alt text-primary fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">Secure Document Storage</h5>
+                            <p class="mb-0 text-muted">Your documents are encrypted and stored securely in our vault.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

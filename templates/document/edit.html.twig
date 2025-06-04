@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit "{{ document.title }}"{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 fw-bold">Edit Document</h1>
+                {{ include('document/_delete_form.html.twig', {'button_label': '<i class="fas fa-trash"></i> Delete', 'button_class': 'btn-outline-danger'}) }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    {{ include('document/_form.html.twig', {'button_label': 'Update Document'}) }}
+                </div>
+
+                <div class="col-md-4 d-none d-md-block">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Document Preview</h5>
+                            <hr>
+                            <div class="text-center py-3">
+                                {% set extension = document.filePath|split('.')|last|default('file') %}
+                                {% set icon = {
+                                    'pdf': 'fa-file-pdf text-danger',
+                                    'doc': 'fa-file-word text-primary',
+                                    'docx': 'fa-file-word text-primary',
+                                    'xls': 'fa-file-excel text-success',
+                                    'xlsx': 'fa-file-excel text-success',
+                                    'ppt': 'fa-file-powerpoint text-warning',
+                                    'pptx': 'fa-file-powerpoint text-warning',
+                                    'jpg': 'fa-file-image text-info',
+                                    'jpeg': 'fa-file-image text-info',
+                                    'png': 'fa-file-image text-info',
+                                    'txt': 'fa-file-alt text-secondary'
+                                }[extension]|default('fa-file text-secondary') %}
+
+                                <i class="far {{ icon }} fa-5x mb-3"></i>
+
+                                <h6 class="mb-0 text-truncate">{{ document.filePath }}</h6>
+                                <small class="text-muted">
+                                    Uploaded on {{ document.createdAt ? document.createdAt|date('M d, Y') : 'Unknown date' }}
+                                </small>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-3">
+                                {% if document.filePath %}
+                                    <a href="{{ asset('uploads/documents/' ~ document.filePath) }}"
+                                       class="btn btn-outline-primary"
+                                       target="_blank">
+                                        <i class="fas fa-download me-1"></i> Download
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-outline-secondary" disabled>
+                                        <i class="fas fa-times-circle me-1"></i> No file available
+                                    </button>
+                                {% endif %}
+                                <a href="{{ path('app_document_show', {'id': document.id}) }}" class="btn btn-outline-info">
+                                    <i class="fas fa-eye me-1"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Documents{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 fw-bold">My Documents</h1>
+        <a href="{{ path('app_document_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Upload New Document
+        </a>
+    </div>
+
+    {% if documents|length > 0 %}
+        <div class="row g-4">
+            {% for document in documents %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h5 class="card-title fw-bold text-truncate">{{ document.title }}</h5>
+                                <span class="badge bg-light text-dark rounded-pill">
+                                    <i class="far fa-calendar-alt me-1"></i>
+                                    {{ document.createdAt ? document.createdAt|date('M d, Y') : '' }}
+                                </span>
+                            </div>
+
+                            <div class="document-icon mb-3 text-center">
+                                {% set extension = document.filePath|split('.')|last|default('file') %}
+                                {% set icon = {
+                                    'pdf': 'fa-file-pdf text-danger',
+                                    'doc': 'fa-file-word text-primary',
+                                    'docx': 'fa-file-word text-primary',
+                                    'xls': 'fa-file-excel text-success',
+                                    'xlsx': 'fa-file-excel text-success',
+                                    'ppt': 'fa-file-powerpoint text-warning',
+                                    'pptx': 'fa-file-powerpoint text-warning',
+                                    'jpg': 'fa-file-image text-info',
+                                    'jpeg': 'fa-file-image text-info',
+                                    'png': 'fa-file-image text-info',
+                                    'txt': 'fa-file-alt text-secondary'
+                                }[extension]|default('fa-file text-secondary') %}
+
+                                <i class="far {{ icon }} fa-3x"></i>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                {% if document.filePath %}
+                                    <a href="{{ asset('uploads/documents/' ~ document.filePath) }}"
+                                       class="btn btn-outline-primary"
+                                       target="_blank">
+                                        <i class="fas fa-download me-1"></i> Download
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-outline-secondary" disabled>
+                                        <i class="fas fa-times-circle me-1"></i> No file available
+                                    </button>
+                                {% endif %}
+
+                                <div class="d-flex gap-2">
+                                    <a href="{{ path('app_document_show', {'id': document.id}) }}"
+                                       class="btn btn-outline-info flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i> View
+                                    </a>
+                                    <a href="{{ path('app_document_edit', {'id': document.id}) }}"
+                                       class="btn btn-outline-warning flex-grow-1">
+                                        <i class="fas fa-pencil-alt me-1"></i> Edit
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center p-5">
+                <div class="mb-4">
+                    <i class="fas fa-folder-open fa-4x text-muted"></i>
+                </div>
+                <h3 class="h4 mb-3">No documents found</h3>
+                <p class="text-muted mb-4">You haven't uploaded any documents yet. Start by uploading your first document.</p>
+                <a href="{{ path('app_document_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Upload Your First Document
+                </a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

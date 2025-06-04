@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h2>Share Document: {{ document.title }}</h2>
+    <form method="post">
+        <div class="mb-3">
+            <label for="max_uses" class="form-label">Max Uses</label>
+            <input type="number" name="max_uses" id="max_uses" class="form-control" value="1" min="1" max="100">
+        </div>
+        <button class="btn btn-primary">Generate Link</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,15 @@
+/vendor/
+/var/
+/node_modules/
+.env
+.env.local
+.env.*.local
+/public/uploads/*
+/public/bundles/
+/public/build/
+/public/docs/
+.idea/
+/*.iml
+.phpunit.result.cache
+.php_cs.cache
+.DS_Store
