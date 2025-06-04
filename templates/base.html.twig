@@ -118,9 +118,26 @@
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user-circle me-1"></i> {{ app.user.email }}
+                                    {% if app.user.profilePhoto %}
+                                        <img src="{{ asset('uploads/profile_photos/' ~ app.user.profilePhoto) }}" 
+                                             alt="Profile" class="rounded-circle me-1" 
+                                             style="width: 24px; height: 24px; object-fit: cover;">
+                                    {% else %}
+                                        <i class="fas fa-user-circle me-1"></i>
+                                    {% endif %}
+                                    {% if app.user.firstName %}
+                                        {{ app.user.firstName }} {{ app.user.lastName }}
+                                    {% else %}
+                                        {{ app.user.email }}
+                                    {% endif %}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ path('app_profile') }}">
+                                            <i class="fas fa-user me-1"></i> My Profile
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form id="logout-form" action="{{ path('app_logout') }}" method="POST" class="d-none"></form>
                                         <a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit();">

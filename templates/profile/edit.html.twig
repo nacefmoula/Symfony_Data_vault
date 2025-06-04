@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2 fw-bold">Edit Profile</h1>
+                    <a href="{{ path('app_profile') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Profile
+                    </a>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-edit me-2"></i>Update Profile Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+                        
+                        <div class="row g-3">
+                            <!-- Current Profile Photo -->
+                            {% if user.profilePhoto %}
+                                <div class="col-12 text-center mb-3">
+                                    <label class="form-label fw-bold">Current Profile Photo</label>
+                                    <div>
+                                        <img src="{{ asset('uploads/profile_photos/' ~ user.profilePhoto) }}" 
+                                             alt="Current Profile Photo" 
+                                             class="img-fluid rounded-circle" 
+                                             style="width: 100px; height: 100px; object-fit: cover;">
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <!-- First Name -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form_widget(form.firstName, {'attr': {'class': 'form-control', 'placeholder': 'First Name'}}) }}
+                                    {{ form_label(form.firstName) }}
+                                </div>
+                                {{ form_errors(form.firstName) }}
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form_widget(form.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Last Name'}}) }}
+                                    {{ form_label(form.lastName) }}
+                                </div>
+                                {{ form_errors(form.lastName) }}
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Email Address'}}) }}
+                                    {{ form_label(form.email) }}
+                                </div>
+                                {{ form_errors(form.email) }}
+                            </div>
+
+                            <!-- Profile Photo Upload -->
+                            <div class="col-12">
+                                <label for="{{ form.profilePhoto.vars.id }}" class="form-label fw-bold">
+                                    <i class="fas fa-camera me-1"></i>Profile Photo
+                                </label>
+                                {{ form_widget(form.profilePhoto, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.profilePhoto) }}
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Accepted formats: JPEG, PNG, GIF, WebP. Maximum size: 5MB.
+                                    {% if user.profilePhoto %}
+                                        Uploading a new photo will replace the current one.
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ path('app_profile') }}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="card mt-4 border-info">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>Profile Tips
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            <li>Adding your first and last name helps personalize your experience</li>
+                            <li>A profile photo makes your account more recognizable</li>
+                            <li>Keep your email address up to date for important notifications</li>
+                            <li>You can change your password separately in the "Change Password" section</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Profile photo preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const photoInput = document.getElementById('{{ form.profilePhoto.vars.id }}');
+            
+            if (photoInput) {
+                photoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            // You could add a preview here if desired
+                            console.log('Photo selected:', file.name);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

@@ -10,11 +10,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
@@ -25,7 +27,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationForm::class, $user);
@@ -37,6 +39,24 @@ class RegistrationController extends AbstractController
 
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+            // Handle profile photo upload
+            $profilePhotoFile = $form->get('profilePhoto')->getData();
+            if ($profilePhotoFile) {
+                $originalFilename = pathinfo($profilePhotoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$profilePhotoFile->guessExtension();
+
+                try {
+                    $profilePhotoFile->move(
+                        $this->getParameter('profile_photos_directory'),
+                        $newFilename
+                    );
+                    $user->setProfilePhoto($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Error uploading profile photo. Please try again.');
+                }
+            }
 
             $entityManager->persist($user);
             $entityManager->flush();
